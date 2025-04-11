@@ -1,0 +1,42 @@
+-- Listar todos os clientes com seus endereços
+SELECT idClientes, Nome, Endereco
+FROM Clientes;
+
+
+-- Buscar veículos com descrição contendo "Gol"
+SELECT *
+FROM Veiculos
+WHERE Descricao LIKE '%Gol%';
+
+
+-- Mostrar ordens de serviço e há quantos dias foram emitidas
+SELECT 
+    idOrdem_de_Servico,
+    Numero,
+    DATEDIFF(CURDATE(), Data_de_emissao) AS Dias_desde_emissao
+FROM Ordem_Servico;
+
+
+
+-- Contar quantas ordens de serviço cada cliente possui, mas mostrar só os que têm mais de 1
+SELECT c.Nome, COUNT(os.idOrdem_de_Servico) AS Total_OS
+FROM Clientes c
+JOIN Pedido p ON c.idClientes = p.idPedido
+JOIN Ordem_Servico os ON p.idPedido = os.idOrdem_de_Servico
+GROUP BY c.Nome
+HAVING Total_OS > 0;
+
+
+-- Listar número da ordem de serviço, nome do cliente e nome do mecânico
+-- Mostrar número da OS, nome do cliente e nome do mecânico responsável
+SELECT 
+    os.Numero AS Ordem_Servico,
+    c.Nome AS Cliente,
+    m.Nome AS Mecanico
+FROM ordem_servico os
+JOIN Pedido p ON os.idOrdem_de_Servico = p.idPedido
+JOIN rel_cliente_pedido rcp ON p.idPedido = rcp.Pedido_idPedido
+JOIN Clientes c ON rcp.Clientes_idClientes = c.idClientes
+JOIN rel_pedido_mecanicos rpm ON p.idPedido = rpm.Pedido_idPedido
+JOIN Mecanicos m ON rpm.Mecanicos_idMecanicos = m.idMecanicos;
+
